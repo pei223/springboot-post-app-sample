@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"[python]": {
+			"editor.defaultFormatter": null, 
+		},
+		"python.formatting.provider": "black",
+		"editor.formatOnSave": true,
+		"python.analysis.typeCheckingMode": "strict"
+	},
+	"extensions": {
+		"recommendations": [
+			"oderwat.indent-rainbow",
+			"ms-python.vscode-pylance",
+			"humao.rest-client"
+		]
+	}
+}
