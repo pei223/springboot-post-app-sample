@@ -1,0 +1,3 @@
+GET http://localhost:8888/api/tests/one/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0bmFtZTQiLCJpYXQiOjE2NDEwOTk0MDIsImV4cCI6MTY0MTEwMDQwMn0.24Mk3b3DVTRe_NZaoLnhGe_e1a6IVtZAyr_qwc9d1b1hsM9ZOifZdkVHpxvjRb3JEqoT8JdABv5EiDnaO9bnZg

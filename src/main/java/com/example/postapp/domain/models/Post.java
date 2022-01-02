@@ -1,8 +1,5 @@
 package com.example.postapp.domain.models;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,14 +12,17 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long id;
     @NotBlank
+    @NotNull
     @Size(max = 200)
     public String title;
     @NotBlank
+    @NotNull
     @Size(max = 10000)
     public String content;
     @NotNull
     public boolean expose;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(referencedColumnName = "id")
     public User author;

@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.List;
 
 @Table
@@ -59,10 +60,12 @@ public class User {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Post> posts;
 
+
     public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.posts = Collections.emptyList();
     }
 
     public User() {

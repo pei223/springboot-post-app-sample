@@ -1,6 +1,6 @@
 PUT http://localhost:8888/api/posts/16
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0bmFtZTQiLCJpYXQiOjE2NDA4NDUwODksImV4cCI6MTY0MDg0NjA4OX0.8k8-KjvE2y69Wk26kc2ms0iCw9RYgWFVoIG101uF_3Wgloc9sl3dMw0VvByTpIj35LMRXPc-VH7QqEdiY3gi4Q
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0bmFtZTQiLCJpYXQiOjE2NDEwOTg5MDIsImV4cCI6MTY0MTA5OTkwMn0.HwPP6CLauxqC9vUvnwHVOfngUBCYXIENl2mY0Ar0Bz8pL9ximmiFhCR7j69ifb7lVOwE8KjTkNzABpObS_aYZw
 
 {
   "title": "testname4: title updated",
