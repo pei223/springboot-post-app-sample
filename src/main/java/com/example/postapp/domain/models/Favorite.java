@@ -1,5 +1,7 @@
 package com.example.postapp.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,7 +17,7 @@ public class Favorite {
     public long id;
 
     @NotNull
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     public User user;
 
     @NotNull
@@ -28,6 +30,9 @@ public class Favorite {
     @NotNull
     @NotBlank
     public String authorName;
+
+    public Favorite() {
+    }
 
     public Favorite(User user, Post post, String postTitle, String authorName) {
         this.user = user;

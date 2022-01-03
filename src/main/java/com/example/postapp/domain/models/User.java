@@ -6,7 +6,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.Collections;
 import java.util.List;
 
 @Table
@@ -65,9 +64,12 @@ public class User {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.posts = Collections.emptyList();
     }
 
     public User() {
+    }
+
+    public static User build(UserDetailsImpl userDetails) {
+        return new User(userDetails.getUsername(), userDetails.getEmail(), userDetails.getPassword());
     }
 }

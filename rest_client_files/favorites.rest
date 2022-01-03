@@ -1,0 +1,18 @@
+### 取得
+GET http://localhost:8888/api/favorites/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0bmFtZTQiLCJpYXQiOjE2NDEyMDk2NTYsImV4cCI6MTY0MTIxMDY1Nn0._D3N9E6oZuRgttilRWIScU6bDHwkf2erKdsoBYtcH681yuMm1PJgzj5p3uxMwTiwIGZchsxWCUszXgLjzP1b8A
+
+
+
+### 登録
+POST http://localhost:8888/api/favorites/add/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0bmFtZTQiLCJpYXQiOjE2NDEyMDk2NTYsImV4cCI6MTY0MTIxMDY1Nn0._D3N9E6oZuRgttilRWIScU6bDHwkf2erKdsoBYtcH681yuMm1PJgzj5p3uxMwTiwIGZchsxWCUszXgLjzP1b8A
+
+
+
+### 削除
+POST http://localhost:8888/api/favorites/delete/11
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0bmFtZTQiLCJpYXQiOjE2NDEyMDk2NTYsImV4cCI6MTY0MTIxMDY1Nn0._D3N9E6oZuRgttilRWIScU6bDHwkf2erKdsoBYtcH681yuMm1PJgzj5p3uxMwTiwIGZchsxWCUszXgLjzP1b8A

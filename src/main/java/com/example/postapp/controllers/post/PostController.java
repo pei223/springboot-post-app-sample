@@ -33,12 +33,13 @@ public class PostController {
 
     @PostMapping("/")
     public ResponseEntity<?> create(@AuthenticationPrincipal UserDetailsImpl userDetail,
-                                    @Validated @RequestBody Post post) {
+                                    @Validated @RequestBody RegisterPostBody postBody) {
         Optional<User> user = userRepo.findById(userDetail.getId());
         if (user.isEmpty()) {
             // TODO エラーレスポンス
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("", ""));
         }
+        Post post = new Post(postBody.title, postBody.content, postBody.expose);
         post.setAuthor(user.get());
         postRepo.save(post);
         return ResponseEntity.ok().body(new UpdateResultResponse("Ok"));
@@ -46,7 +47,7 @@ public class PostController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@AuthenticationPrincipal UserDetailsImpl userDetail,
-                                    @PathVariable long id, @Validated @RequestBody UpdatePostBody body) {
+                                    @PathVariable long id, @Validated @RequestBody RegisterPostBody body) {
         Optional<Post> post = postRepo.findById(id);
         if (post.isEmpty()) {
             // TODO エラーレスポンス
