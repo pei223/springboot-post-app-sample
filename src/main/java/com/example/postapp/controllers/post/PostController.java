@@ -53,7 +53,6 @@ public class PostController {
             // TODO エラーレスポンス
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("", ""));
         }
-        System.out.println(String.format("%d, %d", post.get().author.getId(), userDetail.getId()));
         if (post.get().author.getId() != userDetail.getId()) {
             // TODO エラーレスポンス
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("", ""));
@@ -89,7 +88,6 @@ public class PostController {
 
     @GetMapping("/")
     public ResponseEntity<PostsResponse> posts() {
-        System.out.println(postRepo.findAllByExpose(true).get(0));
         return ResponseEntity.ok().body(new PostsResponse(postRepo.findAllByExpose(true)));
     }
 

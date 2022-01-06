@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 @Service
 public class FavoriteService {
@@ -28,19 +27,17 @@ public class FavoriteService {
     @Transactional
     public void register(UserDetailsImpl userDetails, long postId)
             throws NotAuthorizedException, NotFoundException, AlreadyExistsException {
-        Optional<User> user = userRepo.findById(userDetails.getId());
-        if (user.isEmpty()) {
-            throw new NotAuthorizedException(String.format("id: %d is not found.", userDetails.getId()));
-        }
-        Optional<Post> post = postRepo.findById(postId);
-        if (post.isEmpty()) {
-            throw new NotFoundException(String.format("Not exist postId: %d", postId));
-        }
-        if (favRepo.existsByUserIdAndPostId(user.get().getId(), postId)) {
+        User user = userRepo.findById(userDetails.getId())
+                .orElseThrow(
+                        () -> new NotAuthorizedException(String.format("id: %d is not found.", userDetails.getId()))
+                );
+        Post post = postRepo.findById(postId)
+                .orElseThrow(() -> new NotFoundException(String.format("Not exist postId: %d", postId)));
+        if (favRepo.existsByUserIdAndPostId(user.getId(), postId)) {
             throw new AlreadyExistsException(
-                    String.format("postId: %d, userId: %d data already exists", postId, user.get().getId()));
+                    String.format("postId: %d, userId: %d data already exists", postId, user.getId()));
         }
-        Favorite fav = Favorite.build(user.get(), post.get());
+        Favorite fav = Favorite.build(user, post);
         favRepo.save(fav);
     }
 

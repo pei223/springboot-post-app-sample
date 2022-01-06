@@ -17,6 +17,7 @@ public class FavoriteServiceTests {
     @Autowired
     private FavoriteService service;
 
+
     @Test
     void testDelete() throws Exception {
         try {
