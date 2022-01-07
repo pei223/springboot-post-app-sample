@@ -7,6 +7,9 @@ import com.example.postapp.domain.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class TestUtil {
     @Autowired
@@ -25,5 +28,14 @@ public class TestUtil {
         post.setAuthor(user);
         postRepo.save(post);
         return post;
+    }
+
+    public List<Post> createManyTestPost(int count, String baseName, User user) {
+        List<Post> result = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            Post post = this.createTestPost(String.format("%s_%d", baseName, count), i % 2 == 0, user);
+            result.add(post);
+        }
+        return result;
     }
 }

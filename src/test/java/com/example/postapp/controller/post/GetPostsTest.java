@@ -41,7 +41,7 @@ public class GetPostsTest {
 
 
         MvcResult result = mockMvc.perform(
-                get("/api/posts/")
+                get("/api/posts/?page=1")
                         .with(user(UserDetailsImpl.build(user)))
                         .header("content-type", "application/json")
         ).andExpect(status().is(200)).andReturn();
@@ -52,4 +52,17 @@ public class GetPostsTest {
         Assert.assertEquals(response.posts.stream().filter(post -> !post.expose).count(), 0);
         Assert.assertTrue(response.posts.stream().filter(post -> post.expose).count() > 0);
     }
+
+    @Test
+    void testTryingToGetPostsWithoutPaginationParam() throws Exception {
+        User user = testUtil.createTestUser("testTryingToGetPostsWithoutPaginationParam");
+        testUtil.createTestPost("testTryingToGetPostsWithoutPaginationParam", false, user);
+        mockMvc.perform(
+                get("/api/posts/")
+                        .with(user(UserDetailsImpl.build(user)))
+                        .header("content-type", "application/json")
+        ).andExpect(status().is(400));
+    }
+
+    // TODO ページングが正常に動いているか確認できるようなテストケース
 }

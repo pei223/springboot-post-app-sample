@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
@@ -52,7 +53,7 @@ public class CreatePostTest {
                         .header("content-type", "application/json")
                         .content(body)
         ).andExpect(status().is(200));
-        List<Post> post = postRepo.findAllByAuthorId(user1.getId());
+        List<Post> post = postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent();
         Assert.assertEquals(post.size(), 1);
     }
 
@@ -78,7 +79,7 @@ public class CreatePostTest {
                         .content(shortTitleAndContentBody)
         ).andExpect(status().is(200));
 
-        List<Post> post = postRepo.findAllByAuthorId(user1.getId());
+        List<Post> post = postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent();
         Assert.assertEquals(post.size(), 2);
     }
 
@@ -95,7 +96,7 @@ public class CreatePostTest {
                             .header("content-type", "application/json")
                             .content(tooLongTitleBody)
             ).andExpect(status().is(400));
-            Assert.assertEquals(postRepo.findAllByAuthorId(user1.getId()).size(), 0);
+            Assert.assertEquals(postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent().size(), 0);
         } catch (NestedServletException e) {
             // TODO 本当はレスポンスの中身を見るようにしたい
             // 実装を@Validatedではないやり方にするか、ValidationのExceptionは起こさずに400が返る方法を調べる(なさそう)
@@ -117,7 +118,7 @@ public class CreatePostTest {
             Assert.assertTrue(e.getCause() instanceof ConstraintViolationException);
         }
 
-        Assert.assertEquals(postRepo.findAllByAuthorId(user1.getId()).size(), 0);
+        Assert.assertEquals(postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent().size(), 0);
     }
 
     @Test
@@ -155,6 +156,6 @@ public class CreatePostTest {
             // 実装を@Validatedではないやり方にするか、ValidationのExceptionは起こさずに400が返る方法を調べる(なさそう)
             Assert.assertTrue(e.getCause() instanceof ConstraintViolationException);
         }
-        Assert.assertEquals(postRepo.findAllByAuthorId(user1.getId()).size(), 0);
+        Assert.assertEquals(postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent().size(), 0);
     }
 }

@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @Table
 @Entity
@@ -38,5 +39,22 @@ public class Post {
     }
 
     public Post() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return id == post.id &&
+                expose == post.expose &&
+                Objects.equals(title, post.title) &&
+                Objects.equals(content, post.content) &&
+                Objects.equals(author.getId(), post.author.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, content, expose, author);
     }
 }

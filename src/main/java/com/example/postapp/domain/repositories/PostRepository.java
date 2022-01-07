@@ -1,15 +1,15 @@
 package com.example.postapp.domain.repositories;
 
 import com.example.postapp.domain.models.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findAllByAuthorId(long authorId);
+    Page<Post> findAllByAuthorId(long authorId, Pageable pageable);
 
-    List<Post> findAllByExpose(boolean expose);
+    Page<Post> findAllByExpose(boolean expose, Pageable pageable);
 }

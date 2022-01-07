@@ -7,7 +7,12 @@ import com.example.postapp.domain.models.User;
 import com.example.postapp.domain.models.UserDetailsImpl;
 import com.example.postapp.domain.repositories.PostRepository;
 import com.example.postapp.domain.repositories.UserRepository;
+import com.example.postapp.services.post.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,12 +28,18 @@ public class PostController {
     private PostRepository postRepo;
     @Autowired
     private UserRepository userRepo;
+    @Autowired
+    private PostService postService;
 
     @GetMapping("/me")
-    public ResponseEntity<PostsResponse> myPosts(@AuthenticationPrincipal UserDetailsImpl user) {
-        return ResponseEntity.ok().body(new PostsResponse(
-                postRepo.findAllByAuthorId(user.getId())
-        ));
+    public ResponseEntity<PostsResponse> myPosts(@AuthenticationPrincipal UserDetailsImpl user, @RequestParam int page) {
+        Page<Post> postsPage = postService.getMyPosts(user.getId(), page - 1);
+        return ResponseEntity.ok().body(new PostsResponse(postsPage));
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<PostsResponse> getPosts(@RequestParam int page) {
+        return ResponseEntity.ok().body(new PostsResponse(postService.getPosts(page - 1)));
     }
 
     @PostMapping("/")
@@ -84,11 +95,4 @@ public class PostController {
 
         return ResponseEntity.ok().body(new UpdateResultResponse("Ok"));
     }
-
-
-    @GetMapping("/")
-    public ResponseEntity<PostsResponse> posts() {
-        return ResponseEntity.ok().body(new PostsResponse(postRepo.findAllByExpose(true)));
-    }
-
 }

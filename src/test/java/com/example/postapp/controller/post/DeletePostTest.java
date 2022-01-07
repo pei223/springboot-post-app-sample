@@ -53,9 +53,11 @@ public class DeletePostTest {
         User user = testUtil.createTestUser("testNoExistPostDeleting");
 
         mockMvc.perform(
-                put("/api/posts/999")
+                delete("/api/posts/999")
                         .with(user(UserDetailsImpl.build(user)))
                         .header("content-type", "application/json")
         ).andExpect(status().is(400));
     }
+
+    // TODO 他ユーザーのデータを削除しようとするテストケース
 }
