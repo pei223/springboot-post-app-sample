@@ -2,8 +2,6 @@ package com.example.postapp.domain.models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.List;
@@ -55,8 +53,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "author")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "author")
     private List<Post> posts;
 
 

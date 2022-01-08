@@ -25,7 +25,7 @@ public class Post {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(referencedColumnName = "id")
+    @JoinColumn(name = "author_id")
     public User author;
 
     public Post(@NotBlank @NotNull @Size(max = 200) String title, @NotBlank @NotNull @Size(max = 10000) String content, @NotNull boolean expose) {
