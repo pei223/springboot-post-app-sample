@@ -12,4 +12,10 @@ public class RegisterPostBody {
         this.content = content;
         this.expose = expose;
     }
+
+    public RegisterPostBody() {
+        this.title = "";
+        this.content = "";
+        this.expose = false;
+    }
 }

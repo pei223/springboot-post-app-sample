@@ -10,7 +10,7 @@ public class PostsResponse {
     public final List<Post> posts;
     public final int totalPage;
 
-    public PostsResponse(Page<Post> postsPage) {
+    PostsResponse(Page<Post> postsPage) {
         this.posts = postsPage.getContent();
         this.totalPage = postsPage.getTotalPages();
     }
