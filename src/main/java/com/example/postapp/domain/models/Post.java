@@ -1,13 +1,22 @@
 package com.example.postapp.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalTime;
 import java.util.Objects;
 
 @Table
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +31,17 @@ public class Post {
     public String content;
     @NotNull
     public boolean expose;
+
+    @CreatedDate
+    public LocalTime createdAt;
+    @LastModifiedDate
+    public LocalTime updatedAt;
+    @JsonIgnore
+    @CreatedBy
+    public String createdByIpAddress;
+    @JsonIgnore
+    @LastModifiedBy
+    public String updatedByIpAddress;
 
     @NotNull
     @ManyToOne

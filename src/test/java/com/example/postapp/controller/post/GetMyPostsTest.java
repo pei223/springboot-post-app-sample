@@ -37,6 +37,8 @@ public class GetMyPostsTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void testMyPosts() throws Exception {
@@ -55,7 +57,7 @@ public class GetMyPostsTest {
         ).andExpect(status().is(200)).andReturn();
 
         String responseStr = result.getResponse().getContentAsString();
-        PostsResponse response = new ObjectMapper().readValue(responseStr, PostsResponse.class);
+        PostsResponse response = objectMapper.readValue(responseStr, PostsResponse.class);
 
         Assert.assertEquals(expectedPosts.size(), response.posts.size());
         for (int i = 0; i < response.posts.size(); i++) {
@@ -79,7 +81,7 @@ public class GetMyPostsTest {
         ).andExpect(status().is(200)).andReturn();
 
         String responseStr = result.getResponse().getContentAsString();
-        PostsResponse response = new ObjectMapper().readValue(responseStr, PostsResponse.class);
+        PostsResponse response = objectMapper.readValue(responseStr, PostsResponse.class);
 
         Assert.assertEquals(10, response.posts.size());
         Assert.assertEquals(2, response.totalPage);

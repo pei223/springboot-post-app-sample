@@ -6,6 +6,7 @@ import com.example.postapp.domain.models.User;
 import com.example.postapp.domain.models.UserDetailsImpl;
 import com.example.postapp.domain.repositories.PostRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class GetPostsTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Test
     void testGetPosts() throws Exception {
         User user = testUtil.createTestUser("testGetPosts_me");
@@ -47,7 +51,7 @@ public class GetPostsTest {
         ).andExpect(status().is(200)).andReturn();
 
         String responseStr = result.getResponse().getContentAsString();
-        PostsResponse response = new ObjectMapper().readValue(responseStr, PostsResponse.class);
+        PostsResponse response = objectMapper.readValue(responseStr, PostsResponse.class);
 
         Assert.assertEquals(response.posts.stream().filter(post -> !post.expose).count(), 0);
         Assert.assertTrue(response.posts.stream().filter(post -> post.expose).count() > 0);

@@ -1,0 +1,11 @@
+### 記事取得
+GET http://localhost:8888/api/posts/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0bmFtZTQiLCJpYXQiOjE2NDE5MDQ0MDMsImV4cCI6MTY0MTkwNTQwM30.2Jpgl-OeFGcO86g-qJzPThfRTeMldQenJ4rPHkvffLvwAZFlqmmq_C0gBBf6cnEjuZ1_3ZmFlffVkiFl7gc9ag
+
+
+
+### 自分の記事取得
+GET http://localhost:8888/api/posts/me?page=1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0bmFtZTQiLCJpYXQiOjE2NDE5MDQ0MDMsImV4cCI6MTY0MTkwNTQwM30.2Jpgl-OeFGcO86g-qJzPThfRTeMldQenJ4rPHkvffLvwAZFlqmmq_C0gBBf6cnEjuZ1_3ZmFlffVkiFl7gc9ag

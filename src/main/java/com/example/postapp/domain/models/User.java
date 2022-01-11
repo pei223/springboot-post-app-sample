@@ -2,12 +2,19 @@ package com.example.postapp.domain.models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.List;
 
 @Table
 @Entity(name = "post_user")
+@EntityListeners(AuditingEntityListener.class)
 public class User {
     public long getId() {
         return id;
@@ -41,6 +48,37 @@ public class User {
         this.email = email;
     }
 
+    public LocalTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getCreatedByIpAddress() {
+        return createdByIpAddress;
+    }
+
+    public void setCreatedByIpAddress(String createdByIpAddress) {
+        this.createdByIpAddress = createdByIpAddress;
+    }
+
+    public String getUpdatedByIpAddress() {
+        return updatedByIpAddress;
+    }
+
+    public void setUpdatedByIpAddress(String updatedByIpAddress) {
+        this.updatedByIpAddress = updatedByIpAddress;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +90,19 @@ public class User {
     private String password;
     @Column(nullable = false, unique = true, length = 255)
     private String email;
+
+    @CreatedDate
+    private LocalTime createdAt;
+    @LastModifiedDate
+    private LocalTime updatedAt;
+
+
+    @JsonIgnore
+    @CreatedBy
+    private String createdByIpAddress;
+    @JsonIgnore
+    @LastModifiedBy
+    private String updatedByIpAddress;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "author")
     private List<Post> posts;
