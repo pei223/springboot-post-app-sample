@@ -29,13 +29,16 @@ public class FavoriteService {
             throws NotAuthorizedException, NotFoundException, AlreadyExistsException {
         User user = userRepo.findById(userDetails.getId())
                 .orElseThrow(
-                        () -> new NotAuthorizedException(String.format("id: %d is not found.", userDetails.getId()))
+                        // TODO エラーコード
+                        () -> new NotAuthorizedException(String.format("id: %d is not found.", userDetails.getId()), "")
                 );
         Post post = postRepo.findById(postId)
-                .orElseThrow(() -> new NotFoundException(String.format("Not exist postId: %d", postId)));
+                // TODO エラーコード
+                .orElseThrow(() -> new NotFoundException(String.format("Not exist postId: %d", postId), ""));
         if (favRepo.existsByUserIdAndPostId(user.getId(), postId)) {
+            // TODO エラーコード
             throw new AlreadyExistsException(
-                    String.format("postId: %d, userId: %d data already exists", postId, user.getId()));
+                    String.format("postId: %d, userId: %d data already exists", postId, user.getId()), "");
         }
         Favorite fav = Favorite.build(user, post);
         favRepo.save(fav);
@@ -44,7 +47,9 @@ public class FavoriteService {
     @Transactional
     public void delete(UserDetailsImpl userDetails, long postId) throws NotFoundException {
         if (!favRepo.existsByUserIdAndPostId(userDetails.getId(), postId)) {
-            throw new NotFoundException(String.format("Not exist userId: %d, postId: %d", userDetails.getId(), postId));
+            // TODO エラーコード
+            throw new NotFoundException(
+                    String.format("Not exist userId: %d, postId: %d", userDetails.getId(), postId), "");
         }
         favRepo.deleteByUserIdAndPostId(userDetails.getId(), postId);
     }

@@ -1,6 +1,5 @@
 package com.example.postapp.controllers.favorite;
 
-import com.example.postapp.controllers.common.ErrorResponse;
 import com.example.postapp.controllers.common.UpdateResultResponse;
 import com.example.postapp.domain.models.UserDetailsImpl;
 import com.example.postapp.domain.repositories.FavoriteRepository;
@@ -28,28 +27,16 @@ public class FavoriteController {
     }
 
     @PostMapping("/add/{postId}")
-    public ResponseEntity<?> addFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable long postId) {
-        try {
-            service.register(user, postId);
-            return ResponseEntity.ok().body(new UpdateResultResponse("created"));
-        } catch (NotAuthorizedException e) {
-            // TODO エラーコード
-            return ResponseEntity.status(401).body(new ErrorResponse(e.getMessage(), ""));
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (AlreadyExistsException e) {
-            // TODO エラーコード
-            return ResponseEntity.badRequest().body(new ErrorResponse("post is already added.", ""));
-        }
+    public ResponseEntity<?> addFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable long postId)
+            throws NotAuthorizedException, NotFoundException, AlreadyExistsException {
+        service.register(user, postId);
+        return ResponseEntity.ok().body(new UpdateResultResponse("created"));
     }
 
     @PostMapping("/delete/{postId}")
-    public ResponseEntity<?> deleteFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable long postId) {
-        try {
-            service.delete(user, postId);
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> deleteFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable long postId)
+            throws NotFoundException {
+        service.delete(user, postId);
         return ResponseEntity.ok().body("");
     }
 }

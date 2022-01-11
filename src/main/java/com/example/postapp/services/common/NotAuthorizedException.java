@@ -1,7 +1,7 @@
 package com.example.postapp.services.common;
 
-public class NotAuthorizedException extends RuntimeException {
-    public NotAuthorizedException(String message) {
-        super(message);
+public class NotAuthorizedException extends PostAppException {
+    public NotAuthorizedException(String errorMessage, String errorCode) {
+        super(errorMessage, errorCode);
     }
 }
