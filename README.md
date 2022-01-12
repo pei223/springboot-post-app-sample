@@ -15,6 +15,11 @@ https://start.spring.io/
 - validation
 - spring session
 
+## アプリ実行
+```
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
 
 ## MySQL設定
 resources/application.propertiesで設定

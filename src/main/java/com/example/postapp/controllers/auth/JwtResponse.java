@@ -12,4 +12,11 @@ public class JwtResponse {
         this.name = name;
         this.email = email;
     }
+
+    public JwtResponse() {
+        this.token = "";
+        this.id = 0;
+        this.name = "";
+        this.email = "";
+    }
 }
