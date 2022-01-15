@@ -1,0 +1,77 @@
+<configuration>
+    <!-- デフォルト設定読み込み -->
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- 開発環境 -->
+    <springProfile name="default,dev">
+        <property name="logFilePath" value="./logs/"/>
+
+        <!-- SQLトレース -->
+        <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.springframework.orm.jpa" level="DEBUG"/>
+
+        <!-- コンソール出力 -->
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <target>System.out</target>
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <!-- アプリケーションログのファイル書き出し -->
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <!--ファイル名 -->
+            <file>${logFilePath}${logFileName}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${logFilePath}${logFileName}-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+                <maxHistory>3</maxHistory>
+                <totalSizeCap>1GB</totalSizeCap>
+            </rollingPolicy>
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="info">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- 本番環境 -->
+    <springProfile name="prod">
+        <property name="logFilePath" value="/var/log/production/"/>
+
+        <!-- コンソール出力 -->
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <target>System.out</target>
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <!-- アプリケーションログのファイル書き出し -->
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <!--ファイル名 -->
+            <file>${logFilePath}${logFileName}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${logFilePath}${logFileName}-%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+                <maxHistory>3</maxHistory>
+                <totalSizeCap>1GB</totalSizeCap>
+            </rollingPolicy>
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="warn">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+</configuration>

@@ -11,7 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Table
@@ -33,9 +33,9 @@ public class Post {
     public boolean expose;
 
     @CreatedDate
-    public LocalTime createdAt;
+    public LocalDateTime createdAt;
     @LastModifiedDate
-    public LocalTime updatedAt;
+    public LocalDateTime updatedAt;
     @JsonIgnore
     @CreatedBy
     public String createdByIpAddress;

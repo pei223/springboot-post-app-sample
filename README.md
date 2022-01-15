@@ -17,7 +17,7 @@ https://start.spring.io/
 
 ## アプリ実行
 ```
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
+mvn spring-boot:run -Dspring-boot.run.profiles=dev,common
 ```
 
 
