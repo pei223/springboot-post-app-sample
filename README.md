@@ -16,9 +16,15 @@ https://start.spring.io/
 - spring session
 
 ## アプリ実行
+### デバッグビルド
 ```
-mvn spring-boot:run -Dspring-boot.run.profiles=dev,common
+mvn spring-boot:run -D"spring-boot.run.profiles"=dev,common
 ```
+### 商用ビルド
+```
+mvn spring-boot:run -D"spring-boot.run.profiles"=prod,common
+```
+
 
 
 ## MySQL設定

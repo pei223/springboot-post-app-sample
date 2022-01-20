@@ -8,6 +8,13 @@ import com.example.postapp.domain.models.UserDetailsImpl;
 import com.example.postapp.domain.repositories.PostRepository;
 import com.example.postapp.domain.repositories.UserRepository;
 import com.example.postapp.services.post.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,20 +40,67 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/me")
-    public ResponseEntity<PostsResponse> myPosts(@AuthenticationPrincipal UserDetailsImpl user, @RequestParam int page) {
+    @Operation(
+            operationId = "MyPost",
+            description = "自分の記事一覧を取得する",
+            security = {@SecurityRequirement(name = "bearer-key")}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "正常レスポンス",
+                    content = @Content(schema = @Schema(implementation = PostsResponse.class))),
+            @ApiResponse(responseCode = "401", description = "認証エラー。<br />エラーコードは401。",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
+    public ResponseEntity<PostsResponse> myPosts(@AuthenticationPrincipal UserDetailsImpl user,
+                                                 @Parameter(description = "ページ数", required = true)
+                                                 @RequestParam int page) {
         logger.info("MyPost request");
         Page<Post> postsPage = postService.getMyPosts(user.getId(), page - 1);
         return ResponseEntity.ok().body(new PostsResponse(postsPage));
     }
 
     @GetMapping("/")
-    public ResponseEntity<PostsResponse> getPosts(@RequestParam int page) {
+    @Operation(
+            operationId = "GetPost",
+            description = "記事一覧を取得する"
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "正常レスポンス",
+                            content = @Content(schema = @Schema(implementation = PostsResponse.class))),
+                    @ApiResponse(responseCode = "401", description = "認証エラー",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    )
+            }
+    )
+    public ResponseEntity<PostsResponse> getPosts(
+            @Parameter(description = "ページ数", required = true) @RequestParam int page
+    ) {
         logger.info("GetPost request");
         return ResponseEntity.ok().body(new PostsResponse(postService.getPosts(page - 1)));
     }
 
     @PostMapping("/")
+    @Operation(
+            operationId = "CreatePost",
+            description = "記事を登録する",
+            security = {@SecurityRequirement(name = "bearer-key")}
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "登録成功",
+                            content = @Content(schema = @Schema(implementation = UpdateResultResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "入力データエラー",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    ),
+                    @ApiResponse(responseCode = "401", description = "認証エラー",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    )
+            }
+    )
     public ResponseEntity<?> create(@AuthenticationPrincipal UserDetailsImpl userDetail,
+                                    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "記事データ", required = true)
                                     @Validated @RequestBody RegisterPostBody postBody) {
         logger.info("CreatePost request");
         Optional<User> user = userRepo.findById(userDetail.getId());
@@ -62,8 +116,14 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
+    @Operation(
+            operationId = "UpdatePost",
+            description = "記事を更新する",
+            security = {@SecurityRequirement(name = "bearer-key")}
+    )
     public ResponseEntity<?> update(@AuthenticationPrincipal UserDetailsImpl userDetail,
-                                    @PathVariable long id, @Validated @RequestBody RegisterPostBody body) {
+                                    @Parameter(description = "記事ID", required = true) @PathVariable long id,
+                                    @Validated @RequestBody RegisterPostBody body) {
         Optional<Post> post = postRepo.findById(id);
         if (post.isEmpty()) {
             logger.warn("Non-existent post : " + id);
@@ -86,8 +146,13 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(
+            operationId = "UpdatePost",
+            description = "記事を削除する",
+            security = {@SecurityRequirement(name = "bearer-key")}
+    )
     public ResponseEntity<?> delete(@AuthenticationPrincipal UserDetailsImpl userDetail,
-                                    @PathVariable long id) {
+                                    @Parameter(description = "記事ID", required = true) @PathVariable long id) {
         Optional<Post> post = postRepo.findById(id);
         if (post.isEmpty()) {
             logger.warn("Non-existent post : " + id);
