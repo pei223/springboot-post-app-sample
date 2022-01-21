@@ -1,0 +1,30 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    container_name: postapp_db
+    restart: always
+    environment:
+      POSTGRES_DB: postapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: UZjGqnpAWiKrx
+      TZ: "Asia/Tokyo"
+    tty: true
+    hostname: postapp_db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./docker-data/data:/var/lib/postgresql/data
+      - ./docker-data/init:/docker-entrypoint-initdb.d
+
+  postapp:
+    container_name: postapp_app
+    build:
+      context: .
+      dockerfile: dockerfiles/PostAppDockerfile
+    restart: always
+    tty: true
+    ports:
+      - 443:443
+    depends_on:
+      - db

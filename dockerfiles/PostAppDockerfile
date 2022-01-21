@@ -1,0 +1,5 @@
+FROM openjdk:11
+
+COPY /target/postapp-0.0.1-SNAPSHOT.jar postapp-0.0.1.jar
+
+ENTRYPOINT ["java", "-jar", "-Dserver.port=443", "-Dspring.profiles.active=prod,common", "/postapp-0.0.1.jar"]
