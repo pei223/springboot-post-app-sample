@@ -56,8 +56,25 @@ public class DeletePostTest {
                 delete("/api/posts/999")
                         .with(user(UserDetailsImpl.build(user)))
                         .header("content-type", "application/json")
-        ).andExpect(status().is(400));
+        ).andExpect(status().is(404));
     }
 
-    // TODO 他ユーザーのデータを削除しようとするテストケース
+    @Test
+    void testTryingToDeleteOtherUsersPost() throws Exception {
+        User otherUser = testUtil.createTestUser("testTryingToDeleteOtherUsersPost_Other");
+        User me = testUtil.createTestUser("testTryingToDeleteOtherUsersPost_Me");
+        Post otherPost = testUtil.createTestPost("testTryingToDeleteOtherUsersPost_Other", true, otherUser);
+
+        mockMvc.perform(
+                delete("/api/posts/" + otherPost.id)
+                        .with(user(UserDetailsImpl.build(me)))
+                        .header("content-type", "application/json")
+        ).andExpect(status().is(401));
+
+        Post postAfterTryingToDelete = postRepo.findById(otherPost.id).orElseThrow(() -> new AssertionError("Post is " +
+                "not exist."));
+        Assert.assertEquals(otherPost.title, postAfterTryingToDelete.title);
+        Assert.assertEquals(otherPost.content, postAfterTryingToDelete.content);
+        Assert.assertEquals(otherPost.expose, postAfterTryingToDelete.expose);
+    }
 }

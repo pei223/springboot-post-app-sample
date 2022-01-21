@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
+
+@Transactional
 @Service
 public class FavoriteService {
     @Autowired
@@ -24,7 +27,10 @@ public class FavoriteService {
     @Autowired
     UserRepository userRepo;
 
-    @Transactional
+    public List<Favorite> getMyFavorites(long userId) {
+        return favRepo.findAllByUserId(userId);
+    }
+
     public void register(UserDetailsImpl userDetails, long postId)
             throws NotAuthorizedException, NotFoundException, AlreadyExistsException {
         User user = userRepo.findById(userDetails.getId())
@@ -44,7 +50,6 @@ public class FavoriteService {
         favRepo.save(fav);
     }
 
-    @Transactional
     public void delete(UserDetailsImpl userDetails, long postId) throws NotFoundException {
         if (!favRepo.existsByUserIdAndPostId(userDetails.getId(), postId)) {
             // TODO エラーコード

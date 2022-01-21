@@ -3,10 +3,9 @@ package com.example.postapp.controllers.post;
 import com.example.postapp.controllers.common.ErrorResponse;
 import com.example.postapp.controllers.common.UpdateResultResponse;
 import com.example.postapp.domain.models.Post;
-import com.example.postapp.domain.models.User;
 import com.example.postapp.domain.models.UserDetailsImpl;
-import com.example.postapp.domain.repositories.PostRepository;
-import com.example.postapp.domain.repositories.UserRepository;
+import com.example.postapp.services.common.NotAuthorizedException;
+import com.example.postapp.services.common.NotFoundException;
 import com.example.postapp.services.post.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,23 +18,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
     private static final Logger logger = LoggerFactory.getLogger(PostController.class);
 
-    @Autowired
-    private PostRepository postRepo;
-    @Autowired
-    private UserRepository userRepo;
     @Autowired
     private PostService postService;
 
@@ -101,17 +94,9 @@ public class PostController {
     )
     public ResponseEntity<?> create(@AuthenticationPrincipal UserDetailsImpl userDetail,
                                     @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "記事データ", required = true)
-                                    @Validated @RequestBody RegisterPostBody postBody) {
+                                    @Validated @RequestBody RegisterPostBody postBody) throws NotAuthorizedException {
         logger.info("CreatePost request");
-        Optional<User> user = userRepo.findById(userDetail.getId());
-        if (user.isEmpty()) {
-            logger.warn("Non-existent user : " + userDetail.getId());
-            // TODO エラーレスポンス
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("", ""));
-        }
-        Post post = new Post(postBody.title, postBody.content, postBody.expose);
-        post.setAuthor(user.get());
-        postRepo.save(post);
+        postService.registerPost(userDetail, postBody.title, postBody.content, postBody.expose);
         return ResponseEntity.ok().body(new UpdateResultResponse("Ok"));
     }
 
@@ -123,25 +108,9 @@ public class PostController {
     )
     public ResponseEntity<?> update(@AuthenticationPrincipal UserDetailsImpl userDetail,
                                     @Parameter(description = "記事ID", required = true) @PathVariable long id,
-                                    @Validated @RequestBody RegisterPostBody body) {
-        Optional<Post> post = postRepo.findById(id);
-        if (post.isEmpty()) {
-            logger.warn("Non-existent post : " + id);
-            // TODO エラーレスポンス
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("", ""));
-        }
-        if (post.get().author.getId() != userDetail.getId()) {
-            logger.warn("Trying to update other user`s post");
-            // TODO エラーレスポンス
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("", ""));
-        }
-
-        post.get().title = body.title;
-        post.get().content = body.content;
-        post.get().expose = body.expose;
-
-        postRepo.save(post.get());
-
+                                    @Validated @RequestBody RegisterPostBody body
+    ) throws NotFoundException, NotAuthorizedException {
+        postService.updatePost(userDetail, id, body.title, body.content, body.expose);
         return ResponseEntity.ok().body(new UpdateResultResponse("Ok"));
     }
 
@@ -152,21 +121,8 @@ public class PostController {
             security = {@SecurityRequirement(name = "bearer-key")}
     )
     public ResponseEntity<?> delete(@AuthenticationPrincipal UserDetailsImpl userDetail,
-                                    @Parameter(description = "記事ID", required = true) @PathVariable long id) {
-        Optional<Post> post = postRepo.findById(id);
-        if (post.isEmpty()) {
-            logger.warn("Non-existent post : " + id);
-            // TODO エラーレスポンス
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("", ""));
-        }
-        if (post.get().author.getId() != userDetail.getId()) {
-            logger.warn("Trying to delete other user`s post");
-            // TODO エラーレスポンス
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("", ""));
-        }
-
-        postRepo.deleteById(id);
-
+                                    @Parameter(description = "記事ID", required = true) @PathVariable long id) throws NotFoundException, NotAuthorizedException {
+        postService.deletePost(userDetail, id);
         return ResponseEntity.ok().body(new UpdateResultResponse("Ok"));
     }
 }

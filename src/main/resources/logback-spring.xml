@@ -2,6 +2,9 @@
     <!-- デフォルト設定読み込み -->
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
+    <property name="logFileName" value="app_log"/>
+
+
     <!-- 開発環境 -->
     <springProfile name="default,dev">
         <property name="logFilePath" value="./logs/"/>
@@ -16,7 +19,7 @@
             <target>System.out</target>
             <encoder>
                 <charset>UTF-8</charset>
-                <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} [%-5level] [%thread] %class{0}: - %msg%n</pattern>
             </encoder>
         </appender>
 
@@ -31,7 +34,7 @@
             </rollingPolicy>
             <encoder>
                 <charset>UTF-8</charset>
-                <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} [%-5level] [%thread] %class{0}: - %msg%n</pattern>
             </encoder>
         </appender>
 
@@ -50,7 +53,7 @@
             <target>System.out</target>
             <encoder>
                 <charset>UTF-8</charset>
-                <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} [%-5level] [%thread] %class{0}: - %msg%n</pattern>
             </encoder>
         </appender>
 
@@ -65,7 +68,7 @@
             </rollingPolicy>
             <encoder>
                 <charset>UTF-8</charset>
-                <pattern>%d{yyyy/MM/dd HH:mm:ss} %-5level [%thread] - %msg%n</pattern>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} [%-5level] [%thread] %class{0}: - %msg%n</pattern>
             </encoder>
         </appender>
 

@@ -1,6 +1,7 @@
 package com.example.postapp.controller.post;
 
 import com.example.postapp.TestUtil;
+import com.example.postapp.controllers.common.ErrorResponse;
 import com.example.postapp.controllers.post.RegisterPostBody;
 import com.example.postapp.domain.models.Post;
 import com.example.postapp.domain.models.User;
@@ -16,10 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.util.NestedServletException;
 
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -40,6 +40,8 @@ public class CreatePostTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("記事作成")
@@ -89,35 +91,33 @@ public class CreatePostTest {
         User user1 = testUtil.createTestUser("testTryToCreatePostWithInvalidTitle");
         String tooLongTitleBody =
                 new ObjectMapper().writeValueAsString(new RegisterPostBody("1".repeat(201), "test content", false));
-        try {
-            mockMvc.perform(
-                    post("/api/posts/")
-                            .with(user(UserDetailsImpl.build(user1)))
-                            .header("content-type", "application/json")
-                            .content(tooLongTitleBody)
-            ).andExpect(status().is(400));
-            Assert.assertEquals(postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent().size(), 0);
-        } catch (NestedServletException e) {
-            // TODO 本当はレスポンスの中身を見るようにしたい
-            // 実装を@Validatedではないやり方にするか、ValidationのExceptionは起こさずに400が返る方法を調べる(なさそう)
-            Assert.assertTrue(e.getCause() instanceof ConstraintViolationException);
-        }
+        MvcResult tooLongTitleResult = mockMvc.perform(
+                post("/api/posts/")
+                        .with(user(UserDetailsImpl.build(user1)))
+                        .header("content-type", "application/json")
+                        .content(tooLongTitleBody)
+        ).andExpect(status().is(400)).andReturn();
+        ErrorResponse tooLongTitleResponse =
+                objectMapper.readValue(tooLongTitleResult.getResponse().getContentAsString(), ErrorResponse.class);
 
-        try {
-            String emptyTitleBody =
-                    new ObjectMapper().writeValueAsString(new RegisterPostBody("", "test content", false));
-            mockMvc.perform(
-                    post("/api/posts/")
-                            .with(user(UserDetailsImpl.build(user1)))
-                            .header("content-type", "application/json")
-                            .content(emptyTitleBody)
-            ).andExpect(status().is(400));
-        } catch (NestedServletException e) {
-            // TODO 本当はレスポンスの中身を見るようにしたい
-            // 実装を@Validatedではないやり方にするか、ValidationのExceptionは起こさずに400が返る方法を調べる(なさそう)
-            Assert.assertTrue(e.getCause() instanceof ConstraintViolationException);
-        }
+        Assert.assertTrue("Validation error result contains title field.", tooLongTitleResponse.data.containsKey("title"));
+        Assert.assertEquals("Post tried to create is not registered",
+                postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent().size()
+                , 0);
 
+
+        String emptyTitleBody =
+                new ObjectMapper().writeValueAsString(new RegisterPostBody("", "test content", false));
+        MvcResult emptyTitleResult = mockMvc.perform(
+                post("/api/posts/")
+                        .with(user(UserDetailsImpl.build(user1)))
+                        .header("content-type", "application/json")
+                        .content(emptyTitleBody)
+        ).andExpect(status().is(400)).andReturn();
+        ErrorResponse emptyTitleResponse =
+                objectMapper.readValue(emptyTitleResult.getResponse().getContentAsString(), ErrorResponse.class);
+
+        Assert.assertTrue("Validation error result contains title field.", emptyTitleResponse.data.containsKey("title"));
         Assert.assertEquals(postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent().size(), 0);
     }
 
@@ -128,34 +128,36 @@ public class CreatePostTest {
         String tooLongContentBody =
                 new ObjectMapper().writeValueAsString(new RegisterPostBody("test content", "1".repeat(10001), false));
 
-        try {
-            mockMvc.perform(
-                    post("/api/posts/")
-                            .with(user(UserDetailsImpl.build(user1)))
-                            .header("content-type", "application/json")
-                            .content(tooLongContentBody)
-            ).andExpect(status().is(400));
-        } catch (NestedServletException e) {
-            // TODO 本当はレスポンスの中身を見るようにしたい
-            // 実装を@Validatedではないやり方にするか、ValidationのExceptionは起こさずに400が返る方法を調べる(なさそう)
-            Assert.assertTrue(e.getCause() instanceof ConstraintViolationException);
-        }
+        MvcResult tooLongContentResult = mockMvc.perform(
+                post("/api/posts/")
+                        .with(user(UserDetailsImpl.build(user1)))
+                        .header("content-type", "application/json")
+                        .content(tooLongContentBody)
+        ).andExpect(status().is(400)).andReturn();
+        ErrorResponse tooLongContentResponse =
+                objectMapper.readValue(tooLongContentResult.getResponse().getContentAsString(), ErrorResponse.class);
 
-        try {
-            String emptyContentBody =
-                    new ObjectMapper().writeValueAsString(new RegisterPostBody("test title", "1".repeat(10001), false));
+        Assert.assertTrue("Validation error result contains content field.", tooLongContentResponse.data.containsKey(
+                "content"));
+        Assert.assertEquals("Post tried to create is not registered",
+                postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent().size()
+                , 0);
 
-            mockMvc.perform(
-                    post("/api/posts/")
-                            .with(user(UserDetailsImpl.build(user1)))
-                            .header("content-type", "application/json")
-                            .content(emptyContentBody)
-            ).andExpect(status().is(400));
-        } catch (NestedServletException e) {
-            // TODO 本当はレスポンスの中身を見るようにしたい
-            // 実装を@Validatedではないやり方にするか、ValidationのExceptionは起こさずに400が返る方法を調べる(なさそう)
-            Assert.assertTrue(e.getCause() instanceof ConstraintViolationException);
-        }
+
+        String emptyContentBody =
+                new ObjectMapper().writeValueAsString(new RegisterPostBody("test title", "1".repeat(10001), false));
+
+        MvcResult emptyContentResult = mockMvc.perform(
+                post("/api/posts/")
+                        .with(user(UserDetailsImpl.build(user1)))
+                        .header("content-type", "application/json")
+                        .content(emptyContentBody)
+        ).andExpect(status().is(400)).andReturn();
+        ErrorResponse emptyContentResponse =
+                objectMapper.readValue(emptyContentResult.getResponse().getContentAsString(), ErrorResponse.class);
+        Assert.assertTrue("Validation error result contains content field.", emptyContentResponse.data.containsKey(
+                "content"));
+
         Assert.assertEquals(postRepo.findAllByAuthorId(user1.getId(), PageRequest.of(0, 1000)).getContent().size(), 0);
     }
 }

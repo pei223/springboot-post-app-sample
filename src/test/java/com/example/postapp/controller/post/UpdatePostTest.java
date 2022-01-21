@@ -44,8 +44,8 @@ public class UpdatePostTest {
         ).andExpect(status().is(200));
 
         Post post = postRepo.findById(prePost.id).orElseThrow(() -> new AssertionError("Post is not exist."));
-        Assert.assertEquals(post.title, "updated title");
-        Assert.assertEquals(post.content, "updated content");
+        Assert.assertEquals("updated title", post.title);
+        Assert.assertEquals("updated content", post.content);
         Assert.assertFalse(post.expose);
     }
 
@@ -58,11 +58,11 @@ public class UpdatePostTest {
                         .with(user(UserDetailsImpl.build(user1)))
                         .header("content-type", "application/json")
                         .content(body)
-        ).andExpect(status().is(400));
+        ).andExpect(status().is(404));
     }
 
     @Test
-    void testTryingToUpdateOtherPost() throws Exception {
+    void testTryingToUpdateOtherUsersPost() throws Exception {
         User otherUser = testUtil.createTestUser("testTryOtherPostUpdating_Other");
         User me = testUtil.createTestUser("testTryOtherPostUpdating_Me");
         Post otherPost = testUtil.createTestPost("testTryOtherPostUpdating_Other", true, otherUser);
@@ -73,11 +73,11 @@ public class UpdatePostTest {
                         .with(user(UserDetailsImpl.build(me)))
                         .header("content-type", "application/json")
                         .content(body)
-        ).andExpect(status().is(403));
+        ).andExpect(status().is(401));
 
         Post postAfterTryUpdating = postRepo.findById(otherPost.id).orElseThrow(() -> new AssertionError("Post is not exist."));
-        Assert.assertEquals(postAfterTryUpdating.title, otherPost.title);
-        Assert.assertEquals(postAfterTryUpdating.content, otherPost.content);
-        Assert.assertEquals(postAfterTryUpdating.expose, otherPost.expose);
+        Assert.assertEquals(otherPost.title, postAfterTryUpdating.title);
+        Assert.assertEquals(otherPost.content, postAfterTryUpdating.content);
+        Assert.assertEquals(otherPost.expose, postAfterTryUpdating.expose);
     }
 }
