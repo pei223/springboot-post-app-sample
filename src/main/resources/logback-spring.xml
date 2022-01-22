@@ -45,7 +45,7 @@
     </springProfile>
 
     <!-- 本番環境 -->
-    <springProfile name="prod">
+    <springProfile name="onpre">
         <property name="logFilePath" value="/var/log/production/"/>
 
         <!-- コンソール出力 -->

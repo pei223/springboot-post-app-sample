@@ -22,16 +22,11 @@ https://start.spring.io/
 ```
 mvn spring-boot:run -D"spring-boot.run.profiles"=dev,common
 ```
-### 商用動作確認
-```
-mvn spring-boot:run -D"spring-boot.run.profiles"=prod,common
-```
 
 ## プロジェクトビルド
-
+オンプレ用
 ```
-mvn package spring-boot:repackage -D"spring-boot.run.profiles"=prod,common
-
+mvn package spring-boot:repackage -D"spring-boot.run.profiles"=onpre,common
 docker-compose up -d --build
 ```
 
@@ -48,11 +43,6 @@ docker-compose stop
 
 
 
-
-## MySQL設定
-resources/application.propertiesで設定
-
-
 ## 認証関連参考サイト
 - https://www.bezkoder.com/spring-boot-jwt-authentication/ 
 
@@ -62,4 +52,13 @@ https://littleengineer.jp/%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E3%82%AB%E3%83%90
 
 ```
 mvn test jacoco:report -D"spring-boot.run.profiles"=dev,common
+```
+
+
+## PostgreSQL Docker
+```
+docker rm postgreDB --force
+
+docker build -t postgre_db_image -f dockerfiles/PostgreDBDockerfile .
+docker run -d --name postgre_db -p 15432:5432  --restart always postgre_db_image
 ```
