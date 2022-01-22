@@ -3,6 +3,7 @@ package com.example.postapp.controllers.auth;
 import com.example.postapp.domain.models.User;
 import com.example.postapp.domain.models.UserDetailsImpl;
 import com.example.postapp.domain.repositories.UserRepository;
+import com.example.postapp.services.common.AlreadyExistsException;
 import com.example.postapp.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +48,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> register(@Valid @RequestBody SignupRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody SignupRequest request) throws AlreadyExistsException {
         if (repository.existsByEmail(request.email)) {
-            return ResponseEntity.badRequest().body("already_exist");
+            throw new AlreadyExistsException("", "");
         }
 
         User user = new User(request.name,

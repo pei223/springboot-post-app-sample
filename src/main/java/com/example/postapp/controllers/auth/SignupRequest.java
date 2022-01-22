@@ -1,19 +1,20 @@
 package com.example.postapp.controllers.auth;
 
-public class SignupRequest {
-    public final String name;
-    public final String password;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+public class SignupRequest extends LoginRequest {
+    @NotBlank
+    @Size(max = 255)
     public final String email;
 
     public SignupRequest(String name, String password, String email) {
-        this.name = name;
-        this.password = password;
+        super(name, password);
         this.email = email;
     }
 
     public SignupRequest() {
-        this.name = "";
-        this.password = "";
+        super();
         this.email = "";
     }
 }
