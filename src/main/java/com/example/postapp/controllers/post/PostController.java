@@ -23,6 +23,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.OptionalLong;
+
 
 @RestController
 @RequestMapping("/api/posts")
@@ -72,6 +74,32 @@ public class PostController {
     ) {
         logger.info("GetPost request");
         return ResponseEntity.ok().body(new PostsResponse(postService.getPosts(page - 1)));
+    }
+
+
+    @GetMapping("/{id}")
+    @Operation(
+            operationId = "findPost",
+            description = "指定した記事を取得する"
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "取得成功",
+                            content = @Content(schema = @Schema(implementation = Post.class))),
+                    @ApiResponse(responseCode = "401", description = "認証エラー",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "404", description = "存在しない記事",
+                            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            }
+    )
+    public ResponseEntity<Post> findPost(
+            @AuthenticationPrincipal UserDetailsImpl user,
+            @Parameter(description = "記事ID", required = true)
+            @PathVariable long id
+    ) throws NotFoundException {
+        logger.info("findPost request : " + id);
+        return ResponseEntity.ok().body(postService.findPost(id,
+                user != null ? OptionalLong.of(user.getId()) : OptionalLong.empty()));
     }
 
     @PostMapping("/")

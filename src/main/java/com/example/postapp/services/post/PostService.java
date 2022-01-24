@@ -15,6 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.OptionalLong;
+
 
 @Transactional
 @Service
@@ -33,6 +35,10 @@ public class PostService {
     public Page<Post> getPosts(int pageNum) {
         Pageable paging = PageRequest.of(pageNum, DATA_NUM_PER_PAGE, Sort.by("id").descending());
         return postRepo.findAllByExpose(true, paging);
+    }
+
+    public Post findPost(long id, OptionalLong userId) throws NotFoundException {
+        return postRepo.findPost(id, userId).orElseThrow(() -> new NotFoundException("", ""));
     }
 
     public void registerPost(UserDetailsImpl userDetail,

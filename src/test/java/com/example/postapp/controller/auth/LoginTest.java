@@ -7,10 +7,10 @@ import com.example.postapp.controllers.common.ErrorResponse;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -20,10 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 public class LoginTest {
     private boolean init = false;
 
-    private final TestRestTemplate restTemplate = new TestRestTemplate();
-
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private TestRestTemplate restTemplate;
 
     @BeforeEach
     public void setupUser() {
@@ -33,14 +31,14 @@ public class LoginTest {
         init = true;
         // TODO 本当はRepositoryでやった方が楽だがなぜかエラー起きる
         SignupRequest request = new SignupRequest("ログインテストユーザー", "password123", "test1@email.com");
-        restTemplate.postForEntity("http://localhost:" + port + "/api/auth/signup", request, JwtResponse.class);
+        restTemplate.postForEntity("/api/auth/signup", request, JwtResponse.class);
     }
 
     @Test
     void testLogin() {
         LoginRequest request = new LoginRequest("ログインテストユーザー", "password123");
         ResponseEntity<JwtResponse> response =
-                restTemplate.postForEntity("http://localhost:" + port + "/api/auth/login", request, JwtResponse.class);
+                restTemplate.postForEntity("/api/auth/login", request, JwtResponse.class);
         Assert.assertEquals(200, response.getStatusCode().value());
         if (response.getBody() == null) {
             Assert.fail("Body is null.");
@@ -53,7 +51,7 @@ public class LoginTest {
     @Test
     void testTryToLoginWithTooLongName() {
         LoginRequest request = new LoginRequest("1".repeat(256), "password1");
-        ResponseEntity<ErrorResponse> response = restTemplate.postForEntity("http://localhost:" + port + "/api/auth/signup",
+        ResponseEntity<ErrorResponse> response = restTemplate.postForEntity("/api/auth/signup",
                 request, ErrorResponse.class);
         if (response.getBody() == null) {
             Assert.fail();
@@ -66,7 +64,7 @@ public class LoginTest {
     @Test
     void testTryToLoginWithEmptyName() {
         LoginRequest request = new LoginRequest(null, "password1");
-        ResponseEntity<ErrorResponse> response = restTemplate.postForEntity("http://localhost:" + port + "/api/auth/signup",
+        ResponseEntity<ErrorResponse> response = restTemplate.postForEntity("/api/auth/signup",
                 request, ErrorResponse.class);
         if (response.getBody() == null) {
             Assert.fail();
@@ -79,7 +77,7 @@ public class LoginTest {
     @Test
     void testTryToLoginWithTooLongPassword() {
         LoginRequest request = new LoginRequest("ログインテストユーザー", "1".repeat(21));
-        ResponseEntity<ErrorResponse> response = restTemplate.postForEntity("http://localhost:" + port + "/api/auth/signup",
+        ResponseEntity<ErrorResponse> response = restTemplate.postForEntity("/api/auth/signup",
                 request, ErrorResponse.class);
         if (response.getBody() == null) {
             Assert.fail();
@@ -92,7 +90,7 @@ public class LoginTest {
     @Test
     void testTryToLoginWithEmptyPassword() {
         LoginRequest request = new LoginRequest("ログインテストユーザー", "");
-        ResponseEntity<ErrorResponse> response = restTemplate.postForEntity("http://localhost:" + port + "/api/auth/signup",
+        ResponseEntity<ErrorResponse> response = restTemplate.postForEntity("/api/auth/signup",
                 request, ErrorResponse.class);
         if (response.getBody() == null) {
             Assert.fail();
