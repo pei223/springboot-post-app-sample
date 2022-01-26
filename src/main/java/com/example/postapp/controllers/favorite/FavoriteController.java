@@ -22,7 +22,7 @@ public class FavoriteController {
     private FavoriteService service;
 
     @GetMapping("/")
-    public ResponseEntity<?> myFavorites(@AuthenticationPrincipal UserDetailsImpl user) {
+    public ResponseEntity<FavoritesResponse> myFavorites(@AuthenticationPrincipal UserDetailsImpl user) {
         List<Favorite> favorites = service.getMyFavorites(user.getId());
         return ResponseEntity.ok().body(FavoritesResponse.build(favorites));
     }

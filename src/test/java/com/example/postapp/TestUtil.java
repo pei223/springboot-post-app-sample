@@ -30,6 +30,10 @@ public class TestUtil {
         return post;
     }
 
+    public void deletePost(long id) {
+        postRepo.deleteById(id);
+    }
+
     public List<Post> createManyTestPost(int count, String baseName, User user) {
         List<Post> result = new ArrayList<>();
         for (int i = 0; i < count; i++) {
