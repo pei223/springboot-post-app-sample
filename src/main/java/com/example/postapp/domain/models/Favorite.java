@@ -1,28 +1,30 @@
 package com.example.postapp.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 
-@Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "post_id"})
-})
+@Table
 @Entity
 public class Favorite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long id;
 
-    @NotNull
-    @OneToOne
-    public User user;
+    @Nullable
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne
+    public Post post;
 
     @NotNull
-    @OneToOne
-    public Post post;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne
+    public User user;
 
     @NotNull
     @NotBlank

@@ -8,6 +8,7 @@ import com.example.postapp.domain.repositories.FavoriteRepository;
 import com.example.postapp.domain.repositories.PostRepository;
 import com.example.postapp.domain.repositories.UserRepository;
 import com.example.postapp.services.common.AlreadyExistsException;
+import com.example.postapp.services.common.ArgumentException;
 import com.example.postapp.services.common.NotAuthorizedException;
 import com.example.postapp.services.common.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import java.util.List;
 @Transactional
 @Service
 public class FavoriteService {
+    private static long NO_SELECTED_ID = -1;
+
     @Autowired
     FavoriteRepository favRepo;
     @Autowired
@@ -50,12 +53,25 @@ public class FavoriteService {
         favRepo.save(fav);
     }
 
-    public void delete(UserDetailsImpl userDetails, long postId) throws NotFoundException {
-        if (!favRepo.existsByUserIdAndPostId(userDetails.getId(), postId)) {
+    public void delete(UserDetailsImpl userDetails, long favoriteId, long postId) throws NotFoundException, ArgumentException {
+        if (postId == NO_SELECTED_ID && favoriteId == NO_SELECTED_ID) {
+            // TODO エラーコード
+            throw new ArgumentException("", "");
+        }
+        if (postId != NO_SELECTED_ID) {
+            if (!favRepo.existsByUserIdAndPostId(userDetails.getId(), postId)) {
+                // TODO エラーコード
+                throw new NotFoundException(
+                        String.format("Not exist userId: %d, postId: %d", userDetails.getId(), postId), "");
+            }
+            favRepo.deleteByUserIdAndPostId(userDetails.getId(), postId);
+            return;
+        }
+        if (!favRepo.existsById(favoriteId)) {
             // TODO エラーコード
             throw new NotFoundException(
                     String.format("Not exist userId: %d, postId: %d", userDetails.getId(), postId), "");
         }
-        favRepo.deleteByUserIdAndPostId(userDetails.getId(), postId);
+        favRepo.deleteById(favoriteId);
     }
 }

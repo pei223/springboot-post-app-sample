@@ -1,6 +1,7 @@
 package com.example.postapp.controllers.common;
 
 import com.example.postapp.services.common.AlreadyExistsException;
+import com.example.postapp.services.common.ArgumentException;
 import com.example.postapp.services.common.NotAuthorizedException;
 import com.example.postapp.services.common.NotFoundException;
 
@@ -32,6 +33,10 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         }
         if (ex instanceof AlreadyExistsException) {
             return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage(), ((AlreadyExistsException) ex).errorCode));
+        }
+        if (ex instanceof ArgumentException) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage(),
+                    ((ArgumentException) ex).errorCode));
         }
         return super.handleException(ex, request);
     }

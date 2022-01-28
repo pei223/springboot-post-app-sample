@@ -17,11 +17,10 @@ public class FavoriteServiceTests {
     @Autowired
     private FavoriteService service;
 
-
     @Test
     void testDelete() throws Exception {
         try {
-            service.delete(new UserDetailsImpl(1, "", "", ""), 1);
+            service.delete(new UserDetailsImpl(1, "", "", ""), 1, 1);
         } catch (NotFoundException expected) {
             assertTrue(true);
         }
