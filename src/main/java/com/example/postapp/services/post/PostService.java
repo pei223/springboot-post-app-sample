@@ -1,8 +1,11 @@
 package com.example.postapp.services.post;
 
+import com.example.postapp.domain.DisplayPost;
+import com.example.postapp.domain.models.Favorite;
 import com.example.postapp.domain.models.Post;
 import com.example.postapp.domain.models.User;
 import com.example.postapp.domain.models.UserDetailsImpl;
+import com.example.postapp.domain.repositories.FavoriteRepository;
 import com.example.postapp.domain.repositories.PostRepository;
 import com.example.postapp.domain.repositories.UserRepository;
 import com.example.postapp.services.common.NotAuthorizedException;
@@ -15,7 +18,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.OptionalLong;
+import java.util.stream.Collectors;
 
 
 @Transactional
@@ -26,15 +31,22 @@ public class PostService {
     private UserRepository userRepo;
     @Autowired
     private PostRepository postRepo;
+    @Autowired
+    private FavoriteRepository favRepo;
 
     public Page<Post> getMyPosts(long userId, int pageNum) {
         Pageable paging = PageRequest.of(pageNum, DATA_NUM_PER_PAGE, Sort.by("id").descending());
         return postRepo.findAllByAuthorId(userId, paging);
     }
 
-    public Page<Post> getPosts(int pageNum) {
+    public PostPageInfo getPosts(OptionalLong userId, int pageNum) {
         Pageable paging = PageRequest.of(pageNum, DATA_NUM_PER_PAGE, Sort.by("id").descending());
-        return postRepo.findAllByExpose(true, paging);
+        Page<Post> postPage = postRepo.findAllByExpose(true, paging);
+        List<Favorite> favoriteList = favRepo.findAllByPostList(userId, postPage.toList());
+        List<DisplayPost> displayPosts = postPage.toList().stream().map(post -> DisplayPost.toDisplayPost(post,
+                favoriteList.stream().anyMatch(fav -> fav.post.id == post.id)
+        )).collect(Collectors.toList());
+        return new PostPageInfo(postPage.getTotalPages(), displayPosts);
     }
 
     public Post findPost(long id, OptionalLong userId) throws NotFoundException {

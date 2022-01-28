@@ -26,7 +26,6 @@ public class GetFavoritesTest {
         Post myPost1 = testUtil.createTestPost("testAddFavorite_me1", true, me);
         Post myPost2 = testUtil.createTestPost("testAddFavorite_me2", true, me);
 
-
     }
 
     @Test

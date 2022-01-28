@@ -6,6 +6,7 @@ import com.example.postapp.domain.models.Post;
 import com.example.postapp.domain.models.UserDetailsImpl;
 import com.example.postapp.services.common.NotAuthorizedException;
 import com.example.postapp.services.common.NotFoundException;
+import com.example.postapp.services.post.PostPageInfo;
 import com.example.postapp.services.post.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -69,11 +70,13 @@ public class PostController {
                     )
             }
     )
-    public ResponseEntity<PostsResponse> getPosts(
+    public ResponseEntity<PostPageInfo> getPosts(
+            @AuthenticationPrincipal UserDetailsImpl user,
             @Parameter(description = "ページ数", required = true) @RequestParam int page
     ) {
         logger.info("GetPost request");
-        return ResponseEntity.ok().body(new PostsResponse(postService.getPosts(page - 1)));
+        return ResponseEntity.ok().body(postService.getPosts(user != null ? OptionalLong.of(user.getId()) :
+                OptionalLong.empty(), page - 1));
     }
 
 

@@ -1,12 +1,12 @@
 package com.example.postapp.controller.post;
 
 import com.example.postapp.TestUtil;
-import com.example.postapp.controllers.post.PostsResponse;
+import com.example.postapp.domain.models.Post;
 import com.example.postapp.domain.models.User;
 import com.example.postapp.domain.models.UserDetailsImpl;
 import com.example.postapp.domain.repositories.PostRepository;
+import com.example.postapp.services.post.PostPageInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +38,10 @@ public class GetPostsTest {
     void testGetPosts() throws Exception {
         User user = testUtil.createTestUser("testGetPosts_me");
         User otherUser = testUtil.createTestUser("testGetPosts_other");
-        testUtil.createTestPost("testGetPosts1", false, user);
-        testUtil.createTestPost("testGetPosts2", true, user);
-        testUtil.createTestPost("testGetPosts_other1", true, otherUser);
-        testUtil.createTestPost("testGetPosts_other2", false, otherUser);
+        Post myNotExposedPost = testUtil.createTestPost("testGetPosts1", false, user);
+        Post myExposedPost = testUtil.createTestPost("testGetPosts2", true, user);
+        Post otherExposedPost = testUtil.createTestPost("testGetPosts_other1", true, otherUser);
+        Post otherNotExposedPost = testUtil.createTestPost("testGetPosts_other2", false, otherUser);
 
 
         MvcResult result = mockMvc.perform(
@@ -51,10 +51,12 @@ public class GetPostsTest {
         ).andExpect(status().is(200)).andReturn();
 
         String responseStr = result.getResponse().getContentAsString();
-        PostsResponse response = objectMapper.readValue(responseStr, PostsResponse.class);
+        PostPageInfo response = objectMapper.readValue(responseStr, PostPageInfo.class);
 
-        Assert.assertEquals(response.posts.stream().filter(post -> !post.expose).count(), 0);
-        Assert.assertTrue(response.posts.stream().filter(post -> post.expose).count() > 0);
+        Assert.assertEquals(response.posts.stream().filter(post -> post.id == myNotExposedPost.id).count(), 0);
+        Assert.assertEquals(response.posts.stream().filter(post -> post.id == otherNotExposedPost.id).count(), 0);
+        Assert.assertTrue(response.posts.stream().anyMatch(post -> post.id == otherExposedPost.id));
+        Assert.assertTrue(response.posts.stream().anyMatch(post -> post.id == myExposedPost.id));
     }
 
     @Test
