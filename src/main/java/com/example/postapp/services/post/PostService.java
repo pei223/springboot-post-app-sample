@@ -44,7 +44,7 @@ public class PostService {
         Page<Post> postPage = postRepo.findAllByExpose(true, paging);
         List<Favorite> favoriteList = favRepo.findAllByPostList(userId, postPage.toList());
         List<DisplayPost> displayPosts = postPage.toList().stream().map(post -> DisplayPost.toDisplayPost(post,
-                favoriteList.stream().anyMatch(fav -> fav.post.id == post.id)
+                favoriteList.stream().anyMatch(fav -> fav.postId == post.id)
         )).collect(Collectors.toList());
         return new PostPageInfo(postPage.getTotalPages(), displayPosts);
     }

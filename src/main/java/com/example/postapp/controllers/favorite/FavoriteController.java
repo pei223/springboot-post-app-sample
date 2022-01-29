@@ -1,20 +1,19 @@
 package com.example.postapp.controllers.favorite;
 
 import com.example.postapp.controllers.common.UpdateResultResponse;
-import com.example.postapp.domain.models.Favorite;
 import com.example.postapp.domain.models.UserDetailsImpl;
+import com.example.postapp.domain.repositories.FavoritePost;
 import com.example.postapp.services.common.AlreadyExistsException;
 import com.example.postapp.services.common.ArgumentException;
 import com.example.postapp.services.common.NotAuthorizedException;
 import com.example.postapp.services.common.NotFoundException;
 import com.example.postapp.services.favorite.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -24,9 +23,10 @@ public class FavoriteController {
     private FavoriteService service;
 
     @GetMapping("/")
-    public ResponseEntity<FavoritesResponse> myFavorites(@AuthenticationPrincipal UserDetailsImpl user) {
-        List<Favorite> favorites = service.getMyFavorites(user.getId());
-        return ResponseEntity.ok().body(FavoritesResponse.build(favorites));
+    public ResponseEntity<FavoritePostsResponse> myFavorites(@AuthenticationPrincipal UserDetailsImpl user,
+                                                             @RequestParam int page) {
+        Page<FavoritePost> favorites = service.getMyFavorites(user.getId(), page - 1);
+        return ResponseEntity.ok().body(FavoritePostsResponse.build(favorites));
     }
 
     @PostMapping("/add/{postId}")

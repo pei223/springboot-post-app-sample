@@ -4,6 +4,7 @@ import com.example.postapp.domain.models.Favorite;
 import com.example.postapp.domain.models.Post;
 import com.example.postapp.domain.models.User;
 import com.example.postapp.domain.models.UserDetailsImpl;
+import com.example.postapp.domain.repositories.FavoritePost;
 import com.example.postapp.domain.repositories.FavoriteRepository;
 import com.example.postapp.domain.repositories.PostRepository;
 import com.example.postapp.domain.repositories.UserRepository;
@@ -12,6 +13,8 @@ import com.example.postapp.services.common.ArgumentException;
 import com.example.postapp.services.common.NotAuthorizedException;
 import com.example.postapp.services.common.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +24,8 @@ import java.util.List;
 @Transactional
 @Service
 public class FavoriteService {
-    private static long NO_SELECTED_ID = -1;
+    private static final int DATA_NUM_PER_PAGE = 10;
+    private static final long NO_SELECTED_ID = -1;
 
     @Autowired
     FavoriteRepository favRepo;
@@ -30,8 +34,8 @@ public class FavoriteService {
     @Autowired
     UserRepository userRepo;
 
-    public List<Favorite> getMyFavorites(long userId) {
-        return favRepo.findAllByUserId(userId);
+    public Page<FavoritePost> getMyFavorites(long userId, int page) {
+        return favRepo.findAllMyFavoritePost(userId, PageRequest.of(page, DATA_NUM_PER_PAGE));
     }
 
     public void register(UserDetailsImpl userDetails, long postId)
