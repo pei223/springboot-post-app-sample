@@ -9,7 +9,7 @@ test_users = list(
             "email": f"test{i}@test.com",
             "password": f"test{i}passwd",
         },
-        [i for i in range(1, 5)],
+        [i for i in range(1, 9)],
     )
 )
 
@@ -22,7 +22,7 @@ def generate_posts(name: str) -> List[Dict[str, Union[str, bool]]]:
                 "content": f"[{name}] content: {i}",
                 "expose": i % 2 == 0,
             },
-            [i for i in range(1, 5)],
+            [i for i in range(1, 21)],
         )
     )
 
