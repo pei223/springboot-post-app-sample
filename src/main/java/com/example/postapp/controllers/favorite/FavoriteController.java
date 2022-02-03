@@ -37,7 +37,7 @@ public class FavoriteController {
 
     @PostMapping("/delete/{postId}")
     public ResponseEntity<?> deleteFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable long postId)
-            throws NotFoundException, ArgumentException {
+            throws NotFoundException {
         service.delete(user, postId);
         return ResponseEntity.ok().body("");
     }
