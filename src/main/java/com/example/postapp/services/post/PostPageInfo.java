@@ -1,7 +1,5 @@
 package com.example.postapp.services.post;
 
-import com.example.postapp.domain.DisplayPost;
-
 import java.util.List;
 
 public class PostPageInfo {

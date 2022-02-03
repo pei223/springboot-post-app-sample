@@ -1,6 +1,6 @@
 package com.example.postapp.controllers.favorite;
 
-import com.example.postapp.domain.repositories.FavoritePost;
+import com.example.postapp.domain.models.Favorite;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class FavoritePostsResponse {
         this.totalPage = totalPage;
     }
 
-    public static FavoritePostsResponse build(Page<FavoritePost> favorites) {
+    public static FavoritePostsResponse build(Page<Favorite> favorites) {
         return new FavoritePostsResponse(favorites.stream().map(FavoritePostResource::build).collect(Collectors.toList()),
                 favorites.getTotalPages());
     }

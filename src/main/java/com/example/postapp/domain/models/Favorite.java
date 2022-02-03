@@ -6,7 +6,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -20,19 +19,14 @@ public class Favorite {
     public long id;
 
     @NotNull
-    public long postId;
-
-    @NotNull
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne
     public User user;
 
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
-    @NotBlank
-    public String postTitle;
-    @NotNull
-    @NotBlank
-    public String authorName;
+    @ManyToOne
+    public Post post;
 
     @CreatedDate
     public LocalDateTime createdAt;
@@ -40,14 +34,8 @@ public class Favorite {
     public Favorite() {
     }
 
-    public Favorite(User user, long postId, String postTitle, String authorName) {
+    public Favorite(User user, Post post) {
         this.user = user;
-        this.postId = postId;
-        this.postTitle = postTitle;
-        this.authorName = authorName;
-    }
-
-    public static Favorite build(User user, Post post) {
-        return new Favorite(user, post.id, post.title, post.author.getName());
+        this.post = post;
     }
 }

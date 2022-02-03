@@ -1,7 +1,8 @@
-package com.example.postapp.domain;
+package com.example.postapp.services.post;
 
 import com.example.postapp.domain.models.Post;
 import com.example.postapp.domain.models.User;
+import com.example.postapp.domain.repositories.PostWithFavorite;
 
 import java.time.LocalDateTime;
 
@@ -15,10 +16,6 @@ public class DisplayPost {
     public final LocalDateTime createdAt;
 
 
-    public static DisplayPost toDisplayPost(Post post, boolean favorited) {
-        return new DisplayPost(post.id, post.title, post.content, post.author, favorited, post.createdAt);
-    }
-
     public DisplayPost(long id, String title, String content, User author, boolean favorited, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
@@ -26,6 +23,14 @@ public class DisplayPost {
         this.author = author;
         this.favorited = favorited;
         this.createdAt = createdAt;
+    }
+
+    public static DisplayPost fromPost(Post post) {
+        return new DisplayPost(post.id, post.title, post.content, post.author, false, post.createdAt);
+    }
+
+    public static DisplayPost fromPostWithFavorite(PostWithFavorite post) {
+        return new DisplayPost(post.id, post.title, post.content, post.author, post.favorite != null, post.createdAt);
     }
 
     public DisplayPost() {

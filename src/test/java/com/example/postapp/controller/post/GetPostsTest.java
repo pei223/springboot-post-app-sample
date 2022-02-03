@@ -53,10 +53,9 @@ public class GetPostsTest {
         String responseStr = result.getResponse().getContentAsString();
         PostPageInfo response = objectMapper.readValue(responseStr, PostPageInfo.class);
 
-        Assert.assertEquals(response.posts.stream().filter(post -> post.id == myNotExposedPost.id).count(), 0);
-        Assert.assertEquals(response.posts.stream().filter(post -> post.id == otherNotExposedPost.id).count(), 0);
-        Assert.assertTrue(response.posts.stream().anyMatch(post -> post.id == otherExposedPost.id));
-        Assert.assertTrue(response.posts.stream().anyMatch(post -> post.id == myExposedPost.id));
+        Assert.assertTrue(response.totalPage >= 1);
+
+        // TODO 中身の確認はService/Repositoryのテスト
     }
 
     @Test

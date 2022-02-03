@@ -1,12 +1,10 @@
 package com.example.postapp.services.post;
 
-import com.example.postapp.domain.DisplayPost;
-import com.example.postapp.domain.models.Favorite;
 import com.example.postapp.domain.models.Post;
 import com.example.postapp.domain.models.User;
 import com.example.postapp.domain.models.UserDetailsImpl;
-import com.example.postapp.domain.repositories.FavoriteRepository;
 import com.example.postapp.domain.repositories.PostRepository;
+import com.example.postapp.domain.repositories.PostWithFavorite;
 import com.example.postapp.domain.repositories.UserRepository;
 import com.example.postapp.services.common.NotAuthorizedException;
 import com.example.postapp.services.common.NotFoundException;
@@ -31,8 +29,6 @@ public class PostService {
     private UserRepository userRepo;
     @Autowired
     private PostRepository postRepo;
-    @Autowired
-    private FavoriteRepository favRepo;
 
     public Page<Post> getMyPosts(long userId, int pageNum) {
         Pageable paging = PageRequest.of(pageNum, DATA_NUM_PER_PAGE, Sort.by("id").descending());
@@ -41,12 +37,19 @@ public class PostService {
 
     public PostPageInfo getPosts(OptionalLong userId, int pageNum) {
         Pageable paging = PageRequest.of(pageNum, DATA_NUM_PER_PAGE, Sort.by("id").descending());
-        Page<Post> postPage = postRepo.findAllByExpose(true, paging);
-        List<Favorite> favoriteList = favRepo.findAllByPostList(userId, postPage.toList());
-        List<DisplayPost> displayPosts = postPage.toList().stream().map(post -> DisplayPost.toDisplayPost(post,
-                favoriteList.stream().anyMatch(fav -> fav.postId == post.id)
-        )).collect(Collectors.toList());
-        return new PostPageInfo(postPage.getTotalPages(), displayPosts);
+        List<DisplayPost> displayPosts;
+        int totalPage;
+        if (userId.isEmpty()) {
+            Page<Post> postPage = postRepo.findAllByExposeOrderByCreatedAtDesc(true, paging);
+            totalPage = postPage.getTotalPages();
+            displayPosts = postPage.get().map(DisplayPost::fromPost).collect(Collectors.toList());
+        } else {
+            Page<PostWithFavorite> postWithFavoritePage = postRepo.findAllPostsWithFavorite(userId.getAsLong(), paging);
+            totalPage = postWithFavoritePage.getTotalPages();
+            displayPosts =
+                    postWithFavoritePage.get().map(DisplayPost::fromPostWithFavorite).collect(Collectors.toList());
+        }
+        return new PostPageInfo(totalPage, displayPosts);
     }
 
     public Post findPost(long id, OptionalLong userId) throws NotFoundException {

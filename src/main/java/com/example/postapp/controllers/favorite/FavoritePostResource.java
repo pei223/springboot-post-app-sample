@@ -1,11 +1,10 @@
 package com.example.postapp.controllers.favorite;
 
-import com.example.postapp.domain.repositories.FavoritePost;
+import com.example.postapp.domain.models.Favorite;
 
 import java.time.LocalDateTime;
 
 public class FavoritePostResource {
-    private static final long DELETED_ID = -1;
     public final long id;
     public final String title;
     public final String author;
@@ -22,12 +21,8 @@ public class FavoritePostResource {
         this.createdAt = createdAt;
     }
 
-    public static FavoritePostResource build(FavoritePost favoritePost) {
-        if (favoritePost.post == null) {
-            return new FavoritePostResource(favoritePost.id, favoritePost.postTitle,
-                    favoritePost.authorName, DELETED_ID, DELETED_ID, null);
-        }
-        return new FavoritePostResource(favoritePost.id, favoritePost.postTitle,
-                favoritePost.authorName, favoritePost.post.author.getId(), favoritePost.post.id, favoritePost.post.createdAt);
+    public static FavoritePostResource build(Favorite favorite) {
+        return new FavoritePostResource(favorite.id, favorite.post.title,
+                favorite.post.author.getName(), favorite.post.author.getId(), favorite.post.id, favorite.post.createdAt);
     }
 }

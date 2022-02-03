@@ -4,7 +4,6 @@ import com.example.postapp.domain.models.Favorite;
 import com.example.postapp.domain.models.Post;
 import com.example.postapp.domain.models.User;
 import com.example.postapp.domain.models.UserDetailsImpl;
-import com.example.postapp.domain.repositories.FavoritePost;
 import com.example.postapp.domain.repositories.FavoriteRepository;
 import com.example.postapp.domain.repositories.PostRepository;
 import com.example.postapp.domain.repositories.UserRepository;
@@ -18,14 +17,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 
 @Transactional
 @Service
 public class FavoriteService {
     private static final int DATA_NUM_PER_PAGE = 10;
-    private static final long NO_SELECTED_ID = -1;
 
     @Autowired
     FavoriteRepository favRepo;
@@ -34,8 +30,8 @@ public class FavoriteService {
     @Autowired
     UserRepository userRepo;
 
-    public Page<FavoritePost> getMyFavorites(long userId, int page) {
-        return favRepo.findAllMyFavoritePost(userId, PageRequest.of(page, DATA_NUM_PER_PAGE));
+    public Page<Favorite> getMyFavorites(long userId, int page) {
+        return favRepo.findAllByUserId(userId, PageRequest.of(page, DATA_NUM_PER_PAGE));
     }
 
     public void register(UserDetailsImpl userDetails, long postId)
@@ -53,29 +49,16 @@ public class FavoriteService {
             throw new AlreadyExistsException(
                     String.format("postId: %d, userId: %d data already exists", postId, user.getId()), "");
         }
-        Favorite fav = Favorite.build(user, post);
+        Favorite fav = new Favorite(user, post);
         favRepo.save(fav);
     }
 
-    public void delete(UserDetailsImpl userDetails, long favoriteId, long postId) throws NotFoundException, ArgumentException {
-        if (postId == NO_SELECTED_ID && favoriteId == NO_SELECTED_ID) {
-            // TODO エラーコード
-            throw new ArgumentException("", "");
-        }
-        if (postId != NO_SELECTED_ID) {
-            if (!favRepo.existsByUserIdAndPostId(userDetails.getId(), postId)) {
-                // TODO エラーコード
-                throw new NotFoundException(
-                        String.format("Not exist userId: %d, postId: %d", userDetails.getId(), postId), "");
-            }
-            favRepo.deleteByUserIdAndPostId(userDetails.getId(), postId);
-            return;
-        }
-        if (!favRepo.existsById(favoriteId)) {
+    public void delete(UserDetailsImpl userDetails, long postId) throws NotFoundException {
+        if (!favRepo.existsByUserIdAndPostId(userDetails.getId(), postId)) {
             // TODO エラーコード
             throw new NotFoundException(
                     String.format("Not exist userId: %d, postId: %d", userDetails.getId(), postId), "");
         }
-        favRepo.deleteById(favoriteId);
+        favRepo.deleteByUserIdAndPostId(userDetails.getId(), postId);
     }
 }
