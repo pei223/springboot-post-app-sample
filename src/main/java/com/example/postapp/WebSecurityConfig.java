@@ -2,9 +2,9 @@ package com.example.postapp;
 
 import com.example.postapp.controllers.auth.AuthTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -57,10 +57,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**", "/api/posts/", "/api/posts/{id:\\d+}", "/swagger" +
-                "-ui/**", "/v3" +
-                "/**")
+                .authorizeRequests().antMatchers("/api/auth/**", "/swagger-ui/**", "/v3/**")
                 .permitAll()
+                .and().authorizeRequests().antMatchers(HttpMethod.GET, "/api/posts/", "/api/posts/{id:\\d+}").permitAll()
                 .anyRequest().authenticated()
         ;
 

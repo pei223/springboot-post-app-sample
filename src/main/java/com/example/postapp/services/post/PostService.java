@@ -55,9 +55,6 @@ public class PostService {
 
     public void registerPost(UserDetailsImpl userDetail,
                              String title, String content, boolean expose) throws NotAuthorizedException {
-        if (userDetail == null) {
-            throw new NotAuthorizedException("No user", "");
-        }
         User user = userRepo.findById(userDetail.getId()).orElseThrow(() -> new NotAuthorizedException("No exist " +
                 "user: " + userDetail.getId(), ""));
         Post post = new Post(title, content, expose);
@@ -67,9 +64,6 @@ public class PostService {
 
     public void updatePost(UserDetailsImpl userDetail, long postId,
                            String title, String content, boolean expose) throws NotFoundException, NotAuthorizedException {
-        if (userDetail == null) {
-            throw new NotAuthorizedException("No user", "");
-        }
         Post post = postRepo.findById(postId).orElseThrow(() -> new NotFoundException("No exist Post: " + postId, ""));
         if (post.author.getId() != userDetail.getId()) {
             throw new NotAuthorizedException("Trying to update others post", "");
@@ -81,9 +75,6 @@ public class PostService {
     }
 
     public void deletePost(UserDetailsImpl userDetail, long postId) throws NotFoundException, NotAuthorizedException {
-        if (userDetail == null) {
-            throw new NotAuthorizedException("No user", "");
-        }
         Post post = postRepo.findById(postId).orElseThrow(() -> new NotFoundException("No exist Post: " + postId, ""));
         if (post.author.getId() != userDetail.getId()) {
             throw new NotAuthorizedException("Trying to delete others post", "");
