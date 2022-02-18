@@ -22,8 +22,7 @@ http://localhost:8888/swagger-ui/index.html
 ```
 
 
-## プロジェクトビルド
-### オンプレ用
+## プロジェクトビルドオンプレ用
 ビルド・起動
 ```
 mvn package spring-boot:repackage -D"spring-boot.run.profiles"=onpre,common
@@ -39,6 +38,12 @@ docker-compose rm -s
 止める
 ```
 docker-compose stop
+```
+
+## 商用ビルド
+```
+mvn package spring-boot:repackage -D"spring-boot.run.profiles"=prod,common
+docker build -t postapp-backend -f dockerfiles/PostAppProdDockerfile .
 ```
 
 

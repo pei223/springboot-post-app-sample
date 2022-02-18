@@ -44,7 +44,7 @@
         </root>
     </springProfile>
 
-    <!-- 本番環境 -->
+    <!-- オンプレ環境 -->
     <springProfile name="onpre">
         <property name="logFilePath" value="/var/log/production/"/>
 
@@ -75,6 +75,24 @@
         <root level="warn">
             <appender-ref ref="STDOUT"/>
             <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- 本番環境 -->
+    <springProfile name="prod">
+        <property name="logFilePath" value="./logs/"/>
+
+        <!-- コンソール出力 -->
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <target>System.out</target>
+            <encoder>
+                <charset>UTF-8</charset>
+                <pattern>%d{yyyy/MM/dd HH:mm:ss} [%-5level] [%thread] %class{0}: - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="info">
+            <appender-ref ref="STDOUT"/>
         </root>
     </springProfile>
 </configuration>
