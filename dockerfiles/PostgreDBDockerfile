@@ -3,3 +3,4 @@ FROM postgres:latest
 ENV POSTGRES_PASSWORD=UZjGqnpAWiKrx
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_DB=postapp
+ENV TZ=Asia/Tokyo

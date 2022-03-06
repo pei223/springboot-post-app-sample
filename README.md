@@ -2,11 +2,10 @@
 ユーザーごとに記事を作成するサンプルアプリ
 
 
-
 ## アプリ実行
 ### PostgreSQL Dockerセットアップ 
 ```
-docker rm postgreDB --force
+docker rm postgre_db --force
 
 docker build -t postgre_db_image -f dockerfiles/PostgreDBDockerfile .
 docker run -d --name postgre_db -p 15432:5432  --restart always postgre_db_image
@@ -14,7 +13,7 @@ docker run -d --name postgre_db -p 15432:5432  --restart always postgre_db_image
 
 ### デバッグ動作確認
 ```
-mvn spring-boot:run -D"spring-boot.run.profiles"=dev,common
+mvn spring-boot:run -D"spring-boot.run.profiles"=dev
 ```
 Swagger UI
 ```
@@ -25,7 +24,7 @@ http://localhost:8888/swagger-ui/index.html
 ## プロジェクトビルドオンプレ用
 ビルド・起動
 ```
-mvn package spring-boot:repackage -D"spring-boot.run.profiles"=onpre,common
+mvn package spring-boot:repackage -Dmaven.test.skip=true
 docker-compose up -d --build
 ```
 
@@ -42,19 +41,19 @@ docker-compose stop
 
 ## 商用ビルド
 ```
-mvn package spring-boot:repackage -D"spring-boot.run.profiles"=prod,common
-docker build -t postapp-backend -f dockerfiles/PostAppProdDockerfile .
+mvn package spring-boot:repackage -Dmaven.test.skip=true
+docker build -t postapp-backend:0.0.7 -f dockerfiles/PostAppProdDockerfile . --no-cache
 ```
 
 
 ## カバレッジ・テスト
 テスト実行
 ```
-mvn test -D"spring-boot.run.profiles"=dev,common
+mvn test -D"spring-boot.run.profiles"=test
 ```
 テスト実行 + カバレッジ算出
 ```
-mvn test jacoco:report -D"spring-boot.run.profiles"=dev,common
+mvn test jacoco:report -D"spring-boot.run.profiles"=test
 ```
 
 
